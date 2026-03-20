@@ -35,6 +35,8 @@ class KeyLight extends IPSModule
         $this->RegisterPropertyInteger('Port', self::DEFAULT_PORT);
         $this->RegisterPropertyInteger('UpdateInterval', 60);
 
+        $this->RegisterAttributeInteger('LastBrightness', 50);
+
         $this->RegisterTimer('UpdateStatus', 0, 'ELGATOKEYLIGHT_UpdateStatus(' . $this->InstanceID . ');');
     }
 
@@ -110,8 +112,16 @@ class KeyLight extends IPSModule
 
         $light = $data['lights'][0];
 
-        $this->SetValue('On', (bool) ($light['on'] ?? 0));
-        $this->SetValue('Brightness', (int) ($light['brightness'] ?? 0));
+        $on         = (bool) ($light['on'] ?? 0);
+        $brightness = (int) ($light['brightness'] ?? 0);
+
+        // Attribut immer mit dem echten API-Wert aktualisieren (erkennt externe Änderungen)
+        if ($brightness > 0) {
+            $this->WriteAttributeInteger('LastBrightness', $brightness);
+        }
+
+        $this->SetValue('On', $on);
+        $this->SetValue('Brightness', $on ? $brightness : 0);
         $this->SetValue('ColorTemp', $this->MiredToKelvin((int) ($light['temperature'] ?? 200)));
 
         $this->SetStatus(102);
@@ -124,10 +134,26 @@ class KeyLight extends IPSModule
     {
         switch ($ident) {
             case 'On':
-                $this->SetValue('On', (bool) $value);
+                $on = (bool) $value;
+                $this->SetValue('On', $on);
+                if ($on) {
+                    // Helligkeit aus letztem bekannten Wert wiederherstellen
+                    $brightness = $this->ReadAttributeInteger('LastBrightness');
+                    $this->SetValue('Brightness', max(1, $brightness));
+                } else {
+                    $this->SetValue('Brightness', 0);
+                }
                 break;
             case 'Brightness':
-                $this->SetValue('Brightness', (int) $value);
+                $brightness = (int) $value;
+                if ($brightness > 0) {
+                    $this->WriteAttributeInteger('LastBrightness', $brightness);
+                    // Lampe war aus → einschalten
+                    if (!$this->GetValue('On')) {
+                        $this->SetValue('On', true);
+                    }
+                }
+                $this->SetValue('Brightness', $brightness);
                 break;
             case 'ColorTemp':
                 $this->SetValue('ColorTemp', (int) $value);
@@ -150,12 +176,21 @@ class KeyLight extends IPSModule
         }
 
         try {
+            $brightness = $this->GetValue('Brightness');
+            // Wenn Anzeige 0 (Lampe aus), echten Helligkeitswert aus Attribut nehmen
+            if ($brightness <= 0) {
+                $brightness = $this->ReadAttributeInteger('LastBrightness');
+                if ($brightness <= 0) {
+                    $brightness = 50; // Fallback
+                }
+            }
+
             $payload = [
                 'numberOfLights' => 1,
                 'lights'         => [
                     [
                         'on'          => (int) $this->GetValue('On'),
-                        'brightness'  => $this->GetValue('Brightness'),
+                        'brightness'  => $brightness,
                         'temperature' => $this->KelvinToMired($this->GetValue('ColorTemp')),
                     ],
                 ],
