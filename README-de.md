@@ -1,5 +1,7 @@
 # IP-Symcon Modul: Elgato Key Light
 
+*[English version](README.md)*
+
 Dieses Modul bindet [Elgato Key Light](https://www.elgato.com/de/key-light) Lampen direkt in [IP-Symcon](https://www.symcon.de/) ein. Es kommuniziert über die lokale REST-API der Lampe – kein Cloud-Account, keine Elgato-App notwendig.
 
 ## Unterstützte Geräte
