@@ -49,6 +49,14 @@ Die Instanz wird in der Kachel-Visualisierung automatisch als **Licht** dargeste
 | Port | TCP-Port der Lampe | `9123` |
 | Aktualisierungsintervall | Polling-Intervall in Sekunden | `60` |
 
+### Schaltflächen
+
+| Schaltfläche | Beschreibung |
+|---|---|
+| Status aktualisieren | Liest den aktuellen Zustand der Lampe sofort aus |
+| Lampe identifizieren | Lässt die Lampe kurz blinken – nützlich bei mehreren Geräten |
+| Debug-Info anzeigen | Zeigt Geräteinformation (Produktname, Seriennummer, Firmware) und aktuellen Lichtstatus als Popup an |
+
 ## API-Details
 
 Die Lampe stellt eine lokale HTTP-REST-API zur Verfügung:
