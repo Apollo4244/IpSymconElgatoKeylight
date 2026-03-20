@@ -101,12 +101,14 @@ class KeyLight extends IPSModule
         if ($json === false || $json === '') {
             $this->LogMessage('Elgato Keylight: Verbindung zu ' . $this->BuildUrl() . ' fehlgeschlagen.', KL_WARNING);
             $this->SetStatus(201);
+            echo $this->Translate('Fehler: Verbindung zur Lampe fehlgeschlagen. Hostname und Port prüfen.');
             return;
         }
 
         $data = json_decode($json, true);
         if (!isset($data['lights'][0])) {
             $this->LogMessage('Elgato Keylight: Unerwartete API-Antwort: ' . $json, KL_WARNING);
+            echo $this->Translate('Fehler: Unerwartete Antwort der Lampe.') . "\n" . $json;
             return;
         }
 
