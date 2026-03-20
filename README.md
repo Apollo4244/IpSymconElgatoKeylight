@@ -1,75 +1,75 @@
-# IP-Symcon Modul: Elgato Key Light
+# IP-Symcon Module: Elgato Key Light
 
-Dieses Modul bindet [Elgato Key Light](https://www.elgato.com/de/key-light) Lampen direkt in [IP-Symcon](https://www.symcon.de/) ein. Es kommuniziert über die lokale REST-API der Lampe – kein Cloud-Account, keine Elgato-App notwendig.
+This module integrates [Elgato Key Light](https://www.elgato.com/en/key-light) lamps directly into [IP-Symcon](https://www.symcon.de/). It communicates via the lamp's local REST API – no cloud account, no Elgato app required.
 
-## Unterstützte Geräte
+## Supported Devices
 
 - Elgato Key Light
 - Elgato Key Light Air
 - Elgato Key Light Mini
 
-## Funktionen
+## Features
 
-| Variable | Typ | Beschreibung |
+| Variable | Type | Description |
 |---|---|---|
-| An/Aus | Boolean | Schaltet die Lampe ein oder aus |
-| Helligkeit | Integer (0–100 %) | Regelt die Helligkeit |
-| Farbtemperatur | Integer (2900–7000 K) | Regelt die Farbtemperatur (warm → kalt) |
+| On/Off | Boolean | Turns the lamp on or off |
+| Brightness | Integer (0–100 %) | Controls the brightness |
+| Color Temperature | Integer (2900–7000 K) | Controls the color temperature (warm → cool) |
 
-Alle Variablen sind über WebFront und Aktionen steuerbar.
+All variables are controllable via WebFront and actions.
 
-## Visualisierung
+## Visualization
 
-Die Instanz wird in der Kachel-Visualisierung automatisch als **Licht** dargestellt, wenn Helligkeit und Farbtemperatur als Variablen vorhanden sind. Die Variablen verwenden die neue Schieberegler-Darstellung (ab IP-Symcon 8.0) mit korrekter Verwendungszuweisung:
+The instance is automatically displayed as a **light** in the tile visualization when brightness and color temperature variables are present. The variables use the new slider presentation (requires IP-Symcon 8.0) with correct usage assignment:
 
-- **Helligkeit**: Verwendung = Intensität
-- **Farbtemperatur**: Verwendung = Farbtemperatur, Gradient = Farbtemperatur (Kelvin)
+- **Brightness**: Usage = Intensity
+- **Color Temperature**: Usage = Color Temperature, Gradient = Color Temperature (Kelvin)
 
-## Voraussetzungen
+## Requirements
 
-- IP-Symcon ab Version 8.0
-- Elgato Key Light im selben Netzwerk wie IP-Symcon
-- Der Hostname oder die IP-Adresse der Lampe muss bekannt sein
+- IP-Symcon version 8.0 or later
+- Elgato Key Light on the same network as IP-Symcon
+- The hostname or IP address of the lamp must be known
 
 ## Installation
 
-1. Im IP-Symcon Module Store oder per **Modulverwaltung → Git** folgende URL eintragen:
+1. In the IP-Symcon Module Store or via **Module Management → Git**, enter the following URL:
    ```
    https://github.com/Apollo4244/IpSymconElgatoKeylight
    ```
-2. Instanz **Elgato Key Light** anlegen (unter *Geräte*)
-3. Hostname oder IP-Adresse der Lampe eintragen (Port `9123` ist voreingestellt)
-4. Speichern – Variablen werden automatisch angelegt
+2. Create an **Elgato Key Light** instance (under *Devices*)
+3. Enter the hostname or IP address of the lamp (port `9123` is preset)
+4. Save – variables are created automatically
 
-## Konfiguration
+## Configuration
 
-| Einstellung | Beschreibung | Standard |
+| Setting | Description | Default |
 |---|---|---|
-| Hostname / IP | Adresse der Lampe | – |
-| Port | TCP-Port der Lampe | `9123` |
-| Aktualisierungsintervall | Polling-Intervall in Sekunden | `60` |
+| Hostname / IP | Address of the lamp | – |
+| Port | TCP port of the lamp | `9123` |
+| Update Interval | Polling interval in seconds | `60` |
 
-### Schaltflächen
+### Buttons
 
-| Schaltfläche | Beschreibung |
+| Button | Description |
 |---|---|
-| Status aktualisieren | Liest den aktuellen Zustand der Lampe sofort aus |
-| Lampe identifizieren | Lässt die Lampe kurz blinken – nützlich bei mehreren Geräten |
-| Debug-Info anzeigen | Zeigt Geräteinformation (Produktname, Seriennummer, Firmware) und aktuellen Lichtstatus als Popup an |
+| Update Status | Reads the current state of the lamp immediately |
+| Identify Lamp | Makes the lamp flash briefly – useful when multiple devices are present |
+| Show Debug Info | Displays device information (product name, serial number, firmware) and current light status as a popup |
 
-## API-Details
+## API Details
 
-Die Lampe stellt eine lokale HTTP-REST-API zur Verfügung:
+The lamp provides a local HTTP REST API:
 
 ```
-GET  http://<hostname>:9123/elgato/lights   → aktuellen Zustand abrufen
-PUT  http://<hostname>:9123/elgato/lights   → Zustand setzen
+GET  http://<hostname>:9123/elgato/lights   → retrieve current state
+PUT  http://<hostname>:9123/elgato/lights   → set new state
 ```
 
-**Hinweis zur Farbtemperatur:** Die API arbeitet intern in Mired (reziproke Megakelvin). Das Modul rechnet automatisch zwischen Kelvin (Anzeige) und Mired (API) um.
+**Note on color temperature:** The API works internally in Mired (reciprocal megakelvin). The module automatically converts between Kelvin (display) and Mired (API).
 
-Weitere Details zur API: [elgato-key-light-api auf GitHub](https://github.com/adamesch/elgato-key-light-api)
+Further API details: [elgato-key-light-api on GitHub](https://github.com/adamesch/elgato-key-light-api)
 
-## Lizenz
+## License
 
-MIT License – siehe [LICENSE](LICENSE)
+MIT License – see [LICENSE](LICENSE)

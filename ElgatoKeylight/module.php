@@ -52,8 +52,8 @@ class KeyLight extends IPSModule
             return;
         }
 
-        $this->MaintainVariable('On', 'An/Aus', VARIABLETYPE_BOOLEAN, '~Switch', 1, true);
-        $this->MaintainVariable('Brightness', 'Helligkeit', VARIABLETYPE_INTEGER, [
+        $this->MaintainVariable('On', $this->Translate('On/Off'), VARIABLETYPE_BOOLEAN, '~Switch', 1, true);
+        $this->MaintainVariable('Brightness', $this->Translate('Brightness'), VARIABLETYPE_INTEGER, [
             'PRESENTATION' => VARIABLE_PRESENTATION_SLIDER,
             'MIN'          => 0,
             'MAX'          => 100,
@@ -61,7 +61,7 @@ class KeyLight extends IPSModule
             'SUFFIX'       => ' %',
             'USAGE_TYPE'   => 2, // Intensity
         ], 2, true);
-        $this->MaintainVariable('ColorTemp', 'Farbtemperatur', VARIABLETYPE_INTEGER, [
+        $this->MaintainVariable('ColorTemp', $this->Translate('Color Temperature'), VARIABLETYPE_INTEGER, [
             'PRESENTATION'  => VARIABLE_PRESENTATION_SLIDER,
             'MIN'           => self::TEMP_MIN_K,
             'MAX'           => self::TEMP_MAX_K,
@@ -101,14 +101,14 @@ class KeyLight extends IPSModule
         if ($json === false || $json === '') {
             $this->LogMessage('Elgato Keylight: Verbindung zu ' . $this->BuildUrl() . ' fehlgeschlagen.', KL_WARNING);
             $this->SetStatus(201);
-            echo $this->Translate('Fehler: Verbindung zur Lampe fehlgeschlagen. Hostname und Port prüfen.');
+            echo $this->Translate('Error: Could not connect to lamp. Check hostname and port.');
             return;
         }
 
         $data = json_decode($json, true);
         if (!isset($data['lights'][0])) {
             $this->LogMessage('Elgato Keylight: Unerwartete API-Antwort: ' . $json, KL_WARNING);
-            echo $this->Translate('Fehler: Unerwartete Antwort der Lampe.') . "\n" . $json;
+            echo $this->Translate('Error: Unexpected response from lamp.') . "\n" . $json;
             return;
         }
 
@@ -180,7 +180,7 @@ class KeyLight extends IPSModule
 
         $sock = @fsockopen($hostname, $port, $errno, $errstr, 5);
         if ($sock === false) {
-            echo 'Fehler: Verbindung zur Lampe fehlgeschlagen.' . "\n" . $errstr;
+            echo $this->Translate('Error: Could not connect to lamp.') . "\n" . $errstr;
             return;
         }
 
@@ -199,7 +199,7 @@ class KeyLight extends IPSModule
         fclose($sock);
 
         if ($statusLine === false || strpos($statusLine, '200') === false) {
-            echo 'Fehler: Lampe hat nicht wie erwartet geantwortet.' . "\n" . trim((string) $statusLine);
+            echo $this->Translate('Error: Lamp did not respond as expected.') . "\n" . trim((string) $statusLine);
         }
     }
 
@@ -217,29 +217,29 @@ class KeyLight extends IPSModule
         $lines = [];
 
         if ($info) {
-            $lines[] = '=== Geräteinformation ===';
-            $lines[] = 'Produkt:          ' . ($info['productName'] ?? '–');
-            $lines[] = 'Anzeigename:      ' . ($info['displayName'] !== '' ? $info['displayName'] : '(nicht gesetzt)');
-            $lines[] = 'Seriennummer:     ' . ($info['serialNumber'] ?? '–');
-            $lines[] = 'Firmware:         ' . ($info['firmwareVersion'] ?? '–') . ' (Build ' . ($info['firmwareBuildNumber'] ?? '–') . ')';
-            $lines[] = 'Hardware-Typ:     ' . ($info['hardwareBoardType'] ?? '–');
-            $lines[] = 'Features:         ' . implode(', ', $info['features'] ?? []);
+            $lines[] = $this->Translate('=== Device Information ===');
+            $lines[] = $this->Translate('Product:')          . ' ' . ($info['productName'] ?? '–');
+            $lines[] = $this->Translate('Display Name:')     . ' ' . ($info['displayName'] !== '' ? $info['displayName'] : $this->Translate('(not set)'));
+            $lines[] = $this->Translate('Serial Number:')    . ' ' . ($info['serialNumber'] ?? '–');
+            $lines[] = $this->Translate('Firmware:')         . ' ' . ($info['firmwareVersion'] ?? '–') . ' (Build ' . ($info['firmwareBuildNumber'] ?? '–') . ')';
+            $lines[] = $this->Translate('Hardware Type:')    . ' ' . ($info['hardwareBoardType'] ?? '–');
+            $lines[] = $this->Translate('Features:')         . ' ' . implode(', ', $info['features'] ?? []);
         } else {
-            $lines[] = '=== Geräteinformation ===';
-            $lines[] = 'Fehler: Keine Verbindung.';
+            $lines[] = $this->Translate('=== Device Information ===');
+            $lines[] = $this->Translate('Error: No connection.');
         }
 
         $lines[] = '';
 
         if ($lights && isset($lights['lights'][0])) {
             $l = $lights['lights'][0];
-            $lines[] = '=== Lichtstatus ===';
-            $lines[] = 'An/Aus:           ' . ($l['on'] ? 'Ein' : 'Aus');
-            $lines[] = 'Helligkeit:       ' . ($l['brightness'] ?? '–') . ' %';
-            $lines[] = 'Farbtemperatur:   ' . $this->MiredToKelvin((int) ($l['temperature'] ?? 0)) . ' K (' . ($l['temperature'] ?? '–') . ' Mired)';
+            $lines[] = $this->Translate('=== Light Status ===');
+            $lines[] = $this->Translate('On/Off:')             . ' ' . ($l['on'] ? $this->Translate('On') : $this->Translate('Off'));
+            $lines[] = $this->Translate('Brightness:')         . ' ' . ($l['brightness'] ?? '–') . ' %';
+            $lines[] = $this->Translate('Color Temperature:')  . ' ' . $this->MiredToKelvin((int) ($l['temperature'] ?? 0)) . ' K (' . ($l['temperature'] ?? '–') . ' Mired)';
         } else {
-            $lines[] = '=== Lichtstatus ===';
-            $lines[] = 'Fehler: Keine Verbindung.';
+            $lines[] = $this->Translate('=== Light Status ===');
+            $lines[] = $this->Translate('Error: No connection.');
         }
 
         echo implode("\n", $lines);

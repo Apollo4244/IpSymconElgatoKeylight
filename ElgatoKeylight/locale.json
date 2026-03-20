@@ -1,0 +1,35 @@
+{
+    "translations": {
+        "de": {
+            "On/Off": "An/Aus",
+            "Brightness": "Helligkeit",
+            "Color Temperature": "Farbtemperatur",
+            "Hostname / IP Address": "Hostname / IP-Adresse",
+            "e.g. keylight.internal or 192.168.1.100": "z.B. keylight.internal oder 192.168.1.100",
+            "Update Interval": "Aktualisierungsintervall",
+            " seconds": " Sekunden",
+            "Update Status": "Status aktualisieren",
+            "Identify Lamp": "Lampe identifizieren",
+            "Show Debug Info": "Debug-Info anzeigen",
+            "Connected": "Verbunden",
+            "Hostname not configured": "Hostname nicht konfiguriert",
+            "Connection failed": "Verbindung fehlgeschlagen",
+            "Error: Could not connect to lamp. Check hostname and port.": "Fehler: Verbindung zur Lampe fehlgeschlagen. Hostname und Port prüfen.",
+            "Error: Unexpected response from lamp.": "Fehler: Unerwartete Antwort der Lampe.",
+            "Error: Could not connect to lamp.": "Fehler: Verbindung zur Lampe fehlgeschlagen.",
+            "Error: Lamp did not respond as expected.": "Fehler: Lampe hat nicht wie erwartet geantwortet.",
+            "Error: No connection.": "Fehler: Keine Verbindung.",
+            "=== Device Information ===": "=== Geräteinformation ===",
+            "Product:": "Produkt:",
+            "Display Name:": "Anzeigename:",
+            "Serial Number:": "Seriennummer:",
+            "Firmware:": "Firmware:",
+            "Hardware Type:": "Hardware-Typ:",
+            "Features:": "Features:",
+            "(not set)": "(nicht gesetzt)",
+            "=== Light Status ===": "=== Lichtstatus ===",
+            "On": "Ein",
+            "Off": "Aus"
+        }
+    }
+}
