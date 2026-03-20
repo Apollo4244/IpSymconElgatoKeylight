@@ -5,25 +5,25 @@ declare(strict_types=1);
 /**
  * KeyLight
  *
- * IP-Symcon Modul für den Elgato Key Light.
- * Steuert An/Aus, Helligkeit und Farbtemperatur über die lokale REST-API.
+ * IP-Symcon module for the Elgato Key Light.
+ * Controls on/off, brightness and color temperature via the local REST API.
  *
- * API-Endpunkt:  http://<hostname>:9123/elgato/lights
- * GET  → liefert aktuellen Zustand
- * PUT  → setzt neuen Zustand
+ * API endpoint:  http://<hostname>:9123/elgato/lights
+ * GET  → retrieves current state
+ * PUT  → sets new state
  *
- * Farbtemperatur: Die API arbeitet intern in Mired (reciprocal megakelvin).
- * Die Variable speichert Kelvin (2900–7000 K) für eine lesbare Anzeige.
- * Umrechnung Kelvin ↔ Mired erfolgt beim Lesen/Schreiben der API.
- * Darstellung: VARIABLE_PRESENTATION_SLIDER mit USAGE_TYPE 1 (Tuneable White).
- * Helligkeit: VARIABLE_PRESENTATION_SLIDER mit USAGE_TYPE 2 (Intensity).
+ * Color temperature: The API works internally in Mired (reciprocal megakelvin).
+ * The variable stores Kelvin (2900–7000 K) for a readable display.
+ * Conversion between Kelvin and Mired happens when reading/writing the API.
+ * Presentation: VARIABLE_PRESENTATION_SLIDER with USAGE_TYPE 1 (Tuneable White).
+ * Brightness: VARIABLE_PRESENTATION_SLIDER with USAGE_TYPE 2 (Intensity).
  */
 class KeyLight extends IPSModule
 {
     private const API_PATH    = '/elgato/lights';
     private const DEFAULT_PORT = 9123;
 
-    // Kelvin-Grenzen laut Elgato-Spezifikation
+    // Kelvin limits per Elgato specification
     private const TEMP_MIN_K = 2900;
     private const TEMP_MAX_K = 7000;
 
@@ -48,7 +48,7 @@ class KeyLight extends IPSModule
 
         if ($hostname === '') {
             $this->SetTimerInterval('UpdateStatus', 0);
-            $this->SetStatus(104); // Inaktiv: Hostname fehlt
+            $this->SetStatus(104); // Inactive: hostname missing
             return;
         }
 
@@ -68,7 +68,7 @@ class KeyLight extends IPSModule
             'STEP_SIZE'     => 100,
             'SUFFIX'        => ' K',
             'GRADIENT_TYPE' => 2, // Tuneable White
-            'USAGE_TYPE'    => 1, // Tuneable White = Farbtemperatur
+            'USAGE_TYPE'   => 1, // Tuneable White = color temperature
         ], 3, true);
 
         $this->EnableAction('On');
@@ -80,26 +80,26 @@ class KeyLight extends IPSModule
 
         $this->SetStatus(102);
 
-        // Initialer Abruf, aber erst wenn der Kernel bereit ist
+        // Initial fetch, but only once the kernel is ready
         if (IPS_GetKernelRunlevel() === KR_READY) {
             $this->UpdateStatus();
         }
     }
 
     // -------------------------------------------------------------------------
-    // Öffentliche Funktionen
+    // Public functions
     // -------------------------------------------------------------------------
 
     /**
-     * Aktuellen Zustand vom Keylight abrufen und Variablen aktualisieren.
-     * Wird auch per Timer aufgerufen.
+     * Fetch current state from the Key Light and update variables.
+     * Also called by the timer.
      */
     public function UpdateStatus(): void
     {
         $json = @Sys_GetURLContent($this->BuildUrl());
 
         if ($json === false || $json === '') {
-            $this->LogMessage('Elgato Keylight: Verbindung zu ' . $this->BuildUrl() . ' fehlgeschlagen.', KL_WARNING);
+            $this->LogMessage('Elgato Key Light: Connection to ' . $this->BuildUrl() . ' failed.', KL_WARNING);
             $this->SetStatus(201);
             echo $this->Translate('Error: Could not connect to lamp. Check hostname and port.');
             return;
@@ -107,7 +107,7 @@ class KeyLight extends IPSModule
 
         $data = json_decode($json, true);
         if (!isset($data['lights'][0])) {
-            $this->LogMessage('Elgato Keylight: Unerwartete API-Antwort: ' . $json, KL_WARNING);
+            $this->LogMessage('Elgato Key Light: Unexpected API response: ' . $json, KL_WARNING);
             echo $this->Translate('Error: Unexpected response from lamp.') . "\n" . $json;
             return;
         }
@@ -117,7 +117,7 @@ class KeyLight extends IPSModule
         $on         = (bool) ($light['on'] ?? 0);
         $brightness = (int) ($light['brightness'] ?? 0);
 
-        // Attribut immer mit dem echten API-Wert aktualisieren (erkennt externe Änderungen)
+        // Always update the attribute with the real API value (detects external changes)
         if ($brightness > 0) {
             $this->WriteAttributeInteger('LastBrightness', $brightness);
         }
@@ -130,7 +130,7 @@ class KeyLight extends IPSModule
     }
 
     /**
-     * Schnittstelle für Variablen-Aktionen (Benutzer ändert Variable im WebFront).
+     * Interface for variable actions (user changes a variable in WebFront).
      */
     public function RequestAction($ident, $value): void
     {
@@ -139,7 +139,7 @@ class KeyLight extends IPSModule
                 $on = (bool) $value;
                 $this->SetValue('On', $on);
                 if ($on) {
-                    // Helligkeit aus letztem bekannten Wert wiederherstellen
+                    // Restore brightness from last known value
                     $brightness = $this->ReadAttributeInteger('LastBrightness');
                     $this->SetValue('Brightness', max(1, $brightness));
                 } else {
@@ -150,12 +150,12 @@ class KeyLight extends IPSModule
                 $brightness = (int) $value;
                 if ($brightness > 0) {
                     $this->WriteAttributeInteger('LastBrightness', $brightness);
-                    // Lampe war aus → einschalten
+                    // Lamp was off → turn on
                     if (!$this->GetValue('On')) {
                         $this->SetValue('On', true);
                     }
                 } else {
-                    // Slider auf 0 → Lampe ausschalten, LastBrightness behalten
+                    // Slider at 0 → turn lamp off, keep LastBrightness
                     $this->SetValue('On', false);
                 }
                 $this->SetValue('Brightness', $brightness);
@@ -171,7 +171,7 @@ class KeyLight extends IPSModule
     }
 
     /**
-     * Lässt die Lampe kurz blinken zur Identifikation.
+     * Makes the lamp flash briefly for identification.
      */
     public function Identify(): void
     {
@@ -194,7 +194,7 @@ class KeyLight extends IPSModule
 
         fwrite($sock, $request);
 
-        // Statuszeile lesen
+        // Read status line
         $statusLine = fgets($sock);
         fclose($sock);
 
@@ -204,7 +204,7 @@ class KeyLight extends IPSModule
     }
 
     /**
-     * Zeigt Geräteinformationen und aktuellen Lichtstatus als Popup an.
+     * Displays device information and current light status as a popup.
      */
     public function ShowDebugInfo(): void
     {
@@ -246,7 +246,7 @@ class KeyLight extends IPSModule
     }
 
     // -------------------------------------------------------------------------
-    // Hilfsmethoden
+    // Helper methods
     // -------------------------------------------------------------------------
 
     private function SendLightState(): void
@@ -257,11 +257,11 @@ class KeyLight extends IPSModule
 
         try {
             $brightness = $this->GetValue('Brightness');
-            // Wenn Anzeige 0 (Lampe aus), echten Helligkeitswert aus Attribut nehmen
+            // If display shows 0 (lamp off), use real brightness value from attribute
             if ($brightness <= 0) {
                 $brightness = $this->ReadAttributeInteger('LastBrightness');
                 if ($brightness <= 0) {
-                    $brightness = 50; // Fallback
+                    $brightness = 50; // fallback
                 }
             }
 
@@ -283,7 +283,7 @@ class KeyLight extends IPSModule
 
             $sock = @fsockopen($hostname, $port, $errno, $errstr, 5);
             if ($sock === false) {
-                $this->LogMessage('Elgato Key Light: Verbindung fehlgeschlagen: ' . $errstr, KL_WARNING);
+                $this->LogMessage('Elgato Key Light: Connection failed: ' . $errstr, KL_WARNING);
                 return;
             }
 
@@ -300,7 +300,7 @@ class KeyLight extends IPSModule
 
             fwrite($sock, $request);
 
-            // Header lesen bis Leerzeile, Content-Length merken
+            // Read headers until blank line, record Content-Length
             $contentLength = 0;
             while (!feof($sock)) {
                 $line = fgets($sock);
@@ -312,7 +312,7 @@ class KeyLight extends IPSModule
                 }
             }
 
-            // Genau Content-Length Bytes lesen, dann sofort schließen
+            // Read exactly Content-Length bytes, then close immediately
             if ($contentLength > 0) {
                 fread($sock, $contentLength);
             }
@@ -330,7 +330,7 @@ class KeyLight extends IPSModule
         return 'http://' . $hostname . ':' . $port . self::API_PATH;
     }
 
-    /** Mired → Kelvin, gerundet auf 100 K, begrenzt auf den gültigen Bereich */
+    /** Mired → Kelvin, rounded to 100 K, clamped to the valid range */
     private function MiredToKelvin(int $mired): int
     {
         if ($mired <= 0) {
@@ -340,7 +340,7 @@ class KeyLight extends IPSModule
         return max(self::TEMP_MIN_K, min(self::TEMP_MAX_K, $kelvin));
     }
 
-    /** Kelvin → Mired, gerundet auf ganzzahligen Wert */
+    /** Kelvin → Mired, rounded to an integer value */
     private function KelvinToMired(int $kelvin): int
     {
         if ($kelvin <= 0) {
