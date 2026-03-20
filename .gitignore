@@ -1,0 +1,15 @@
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# PHP
+vendor/
+composer.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IP-Symcon
+*.log

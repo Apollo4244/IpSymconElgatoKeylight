@@ -1,0 +1,49 @@
+{
+    "elements": [
+        {
+            "type": "ValidationTextBox",
+            "name": "Hostname",
+            "caption": "Hostname / IP-Adresse",
+            "placeholder": "z.B. keylight.internal oder 192.168.1.100"
+        },
+        {
+            "type": "NumberSpinner",
+            "name": "Port",
+            "caption": "Port",
+            "minimum": 1,
+            "maximum": 65535
+        },
+        {
+            "type": "NumberSpinner",
+            "name": "UpdateInterval",
+            "caption": "Aktualisierungsintervall",
+            "minimum": 1,
+            "maximum": 3600,
+            "suffix": " Sekunden"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Button",
+            "caption": "Status aktualisieren",
+            "onClick": "ElgatoKeylight_UpdateStatus($id);"
+        }
+    ],
+    "status": [
+        {
+            "code": 102,
+            "icon": "active",
+            "caption": "Verbunden"
+        },
+        {
+            "code": 104,
+            "icon": "inactive",
+            "caption": "Hostname nicht konfiguriert"
+        },
+        {
+            "code": 201,
+            "icon": "error",
+            "caption": "Verbindung fehlgeschlagen"
+        }
+    ]
+}

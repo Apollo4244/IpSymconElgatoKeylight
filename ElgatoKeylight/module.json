@@ -1,0 +1,12 @@
+{
+    "id": "{0BF6478A-2ABF-48D6-B31D-8D6397203E64}",
+    "name": "Key Light",
+    "type": 3,
+    "vendor": "Elgato",
+    "aliases": ["Elgato Key Light"],
+    "url": "https://github.com/Apollo4244/IpSymconElgatoKeylight",
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "ELGATOKEYLIGHT"
+}
