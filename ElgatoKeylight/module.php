@@ -152,6 +152,9 @@ class KeyLight extends IPSModule
                     if (!$this->GetValue('On')) {
                         $this->SetValue('On', true);
                     }
+                } else {
+                    // Slider auf 0 → Lampe ausschalten, LastBrightness behalten
+                    $this->SetValue('On', false);
                 }
                 $this->SetValue('Brightness', $brightness);
                 break;
