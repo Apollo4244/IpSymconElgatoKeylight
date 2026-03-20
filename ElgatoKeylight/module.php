@@ -168,6 +168,81 @@ class KeyLight extends IPSModule
         $this->SendLightState();
     }
 
+    /**
+     * Lässt die Lampe kurz blinken zur Identifikation.
+     */
+    public function Identify(): void
+    {
+        $hostname = trim($this->ReadPropertyString('Hostname'));
+        $port     = $this->ReadPropertyInteger('Port');
+
+        $sock = @fsockopen($hostname, $port, $errno, $errstr, 5);
+        if ($sock === false) {
+            echo 'Fehler: Verbindung zur Lampe fehlgeschlagen.' . "\n" . $errstr;
+            return;
+        }
+
+        stream_set_timeout($sock, 5);
+
+        $request = "POST /elgato/identify HTTP/1.1\r\n"
+                 . "Host: {$hostname}:{$port}\r\n"
+                 . "Content-Length: 0\r\n"
+                 . "Connection: close\r\n"
+                 . "\r\n";
+
+        fwrite($sock, $request);
+
+        // Statuszeile lesen
+        $statusLine = fgets($sock);
+        fclose($sock);
+
+        if ($statusLine === false || strpos($statusLine, '200') === false) {
+            echo 'Fehler: Lampe hat nicht wie erwartet geantwortet.' . "\n" . trim((string) $statusLine);
+        }
+    }
+
+    /**
+     * Zeigt Geräteinformationen und aktuellen Lichtstatus als Popup an.
+     */
+    public function ShowDebugInfo(): void
+    {
+        $infoJson  = @Sys_GetURLContent('http://' . trim($this->ReadPropertyString('Hostname')) . ':' . $this->ReadPropertyInteger('Port') . '/elgato/accessory-info');
+        $lightsJson = @Sys_GetURLContent($this->BuildUrl());
+
+        $info   = $infoJson  ? json_decode($infoJson, true)   : null;
+        $lights = $lightsJson ? json_decode($lightsJson, true) : null;
+
+        $lines = [];
+
+        if ($info) {
+            $lines[] = '=== Geräteinformation ===';
+            $lines[] = 'Produkt:          ' . ($info['productName'] ?? '–');
+            $lines[] = 'Anzeigename:      ' . ($info['displayName'] !== '' ? $info['displayName'] : '(nicht gesetzt)');
+            $lines[] = 'Seriennummer:     ' . ($info['serialNumber'] ?? '–');
+            $lines[] = 'Firmware:         ' . ($info['firmwareVersion'] ?? '–') . ' (Build ' . ($info['firmwareBuildNumber'] ?? '–') . ')';
+            $lines[] = 'Hardware-Typ:     ' . ($info['hardwareBoardType'] ?? '–');
+            $lines[] = 'Features:         ' . implode(', ', $info['features'] ?? []);
+        } else {
+            $lines[] = '=== Geräteinformation ===';
+            $lines[] = 'Fehler: Keine Verbindung.';
+        }
+
+        $lines[] = '';
+
+        if ($lights && isset($lights['lights'][0])) {
+            $l = $lights['lights'][0];
+            $lines[] = '=== Lichtstatus ===';
+            $lines[] = 'An/Aus:           ' . ($l['on'] ? 'Ein' : 'Aus');
+            $lines[] = 'Helligkeit:       ' . ($l['brightness'] ?? '–') . ' %';
+            $lines[] = 'Farbtemperatur:   ' . $this->MiredToKelvin((int) ($l['temperature'] ?? 0)) . ' K (' . ($l['temperature'] ?? '–') . ' Mired)';
+        } else {
+            $lines[] = '=== Lichtstatus ===';
+            $lines[] = 'Fehler: Keine Verbindung.';
+        }
+
+        echo implode("\n", $lines);
+    }
+
     // -------------------------------------------------------------------------
     // Hilfsmethoden
     // -------------------------------------------------------------------------

@@ -26,7 +26,19 @@
         {
             "type": "Button",
             "caption": "Status aktualisieren",
-            "onClick": "ElgatoKeylight_UpdateStatus($id);"
+            "onClick": "ELGATOKEYLIGHT_UpdateStatus($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Lampe identifizieren",
+            "enabled": "$Hostname !== ''",
+            "onClick": "ELGATOKEYLIGHT_Identify($id);"
+        },
+        {
+            "type": "Button",
+            "caption": "Debug-Info anzeigen",
+            "enabled": "$Hostname !== ''",
+            "onClick": "ELGATOKEYLIGHT_ShowDebugInfo($id);"
         }
     ],
     "status": [
