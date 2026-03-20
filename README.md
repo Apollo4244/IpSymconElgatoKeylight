@@ -2,7 +2,7 @@
 
 *[Deutsche Version](README-de.md)*
 
-This module integrates [Elgato Key Light](https://www.elgato.com/en/key-light) lamps directly into [IP-Symcon](https://www.symcon.de/). It communicates via the lamp's local REST API – no cloud account, no Elgato app required.
+This module integrates [Elgato Key Light](https://www.elgato.com/en/key-light) lamps directly into [IP-Symcon](https://www.symcon.de/). It communicates via the lamp's local REST API – no Elgato app required.
 
 ## Supported Devices
 
