@@ -1,6 +1,20 @@
 {
     "elements": [
         {
+            "type": "Label",
+            "name": "LabelProduct",
+            "caption": "Product: -"
+        },
+        {
+            "type": "Label",
+            "name": "LabelDisplayName",
+            "caption": "Display Name: -"
+        },
+        {
+            "type": "Label",
+            "caption": " "
+        },
+        {
             "type": "ValidationTextBox",
             "name": "Hostname",
             "caption": "Hostname / IP Address",
@@ -25,19 +39,17 @@
     "actions": [
         {
             "type": "Button",
-            "caption": "Update Status",
-            "onClick": "ELGATOKEYLIGHT_UpdateStatus($id);"
+            "caption": "Apply Device Name",
+            "onClick": "ELGATOKEYLIGHT_ApplyDeviceName($id);"
         },
         {
             "type": "Button",
             "caption": "Identify Lamp",
-            "enabled": "$Hostname !== ''",
             "onClick": "ELGATOKEYLIGHT_Identify($id);"
         },
         {
             "type": "Button",
             "caption": "Show Debug Info",
-            "enabled": "$Hostname !== ''",
             "onClick": "ELGATOKEYLIGHT_ShowDebugInfo($id);"
         }
     ],

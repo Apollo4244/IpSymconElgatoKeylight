@@ -13,7 +13,7 @@ declare(strict_types=1);
  * PUT  → sets new state
  *
  * Color temperature: The API works internally in Mired (reciprocal megakelvin).
- * The variable stores Kelvin (2900–7000 K) for a readable display.
+ * The variable stores Kelvin (2900-7000 K) for a readable display.
  * Conversion between Kelvin and Mired happens when reading/writing the API.
  * Presentation: VARIABLE_PRESENTATION_SLIDER with USAGE_TYPE 1 (Tuneable White).
  * Brightness: VARIABLE_PRESENTATION_SLIDER with USAGE_TYPE 2 (Intensity).
@@ -36,6 +36,8 @@ class KeyLight extends IPSModule
         $this->RegisterPropertyInteger('UpdateInterval', 60);
 
         $this->RegisterAttributeInteger('LastBrightness', 50);
+        $this->RegisterAttributeString('DeviceProductName', '');
+        $this->RegisterAttributeString('DeviceDisplayName', '');
 
         $this->RegisterTimer('UpdateStatus', 0, 'ELGATOKEYLIGHT_UpdateStatus(' . $this->InstanceID . ');');
     }
@@ -89,6 +91,70 @@ class KeyLight extends IPSModule
     // -------------------------------------------------------------------------
     // Public functions
     // -------------------------------------------------------------------------
+
+    /**
+     * Returns the configuration form populated with current device info from stored attributes.
+     */
+    public function GetConfigurationForm(): string
+    {
+        $form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
+
+        $product     = $this->ReadAttributeString('DeviceProductName');
+        $displayName = $this->ReadAttributeString('DeviceDisplayName');
+
+        foreach ($form['elements'] as &$element) {
+            if (($element['name'] ?? '') === 'LabelProduct') {
+                $element['caption'] = $this->Translate('Product:') . ' ' . ($product !== '' ? $product : '-');
+            } elseif (($element['name'] ?? '') === 'LabelDisplayName') {
+                $element['caption'] = $this->Translate('Display Name:') . ' ' . ($displayName !== '' ? $displayName : '-');
+            }
+        }
+
+        return json_encode($form);
+    }
+
+    /**
+     * Fetches the device name from the lamp, applies it as the IPS instance name,
+     * and updates the product and display name labels in the configuration form.
+     */
+    public function ApplyDeviceName(): void
+    {
+        $hostname = trim($this->ReadPropertyString('Hostname'));
+        $port     = $this->ReadPropertyInteger('Port');
+
+        $infoJson = @Sys_GetURLContent('http://' . $hostname . ':' . $port . '/elgato/accessory-info');
+
+        if ($infoJson === false || $infoJson === '') {
+            $this->LogMessage('Elgato Key Light: Could not fetch accessory info from ' . $hostname . '.', KL_WARNING);
+            echo $this->Translate('Error: Could not connect to lamp. Check hostname and port.');
+            return;
+        }
+
+        $info = json_decode($infoJson, true);
+        if (!is_array($info)) {
+            echo $this->Translate('Error: Unexpected response from lamp.') . "\n" . $infoJson;
+            return;
+        }
+
+        $productName = trim($info['productName'] ?? '');
+        $displayName = trim($info['displayName'] ?? '');
+        $name        = $displayName !== '' ? $displayName : $productName;
+
+        if ($name === '') {
+            echo $this->Translate('Error: No device name available.');
+            return;
+        }
+
+        $this->WriteAttributeString('DeviceProductName', $productName);
+        $this->WriteAttributeString('DeviceDisplayName', $displayName);
+
+        $this->UpdateFormField('LabelProduct',     'caption', $this->Translate('Product:')      . ' ' . ($productName !== '' ? $productName : '-'));
+        $this->UpdateFormField('LabelDisplayName', 'caption', $this->Translate('Display Name:') . ' ' . ($displayName !== '' ? $displayName : '-'));
+
+        IPS_SetName($this->InstanceID, $name);
+
+        echo sprintf($this->Translate('Instance renamed to: %s'), $name);
+    }
 
     /**
      * Fetch current state from the Key Light and update variables.

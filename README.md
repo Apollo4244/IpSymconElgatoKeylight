@@ -2,7 +2,7 @@
 
 *[Deutsche Version](README-de.md)*
 
-This module integrates [Elgato Key Light](https://www.elgato.com/en/key-light) lamps directly into [IP-Symcon](https://www.symcon.de/). It communicates via the lamp's local REST API – no Elgato app required.
+This module integrates [Elgato Key Light](https://www.elgato.com/en/key-light) lamps directly into [IP-Symcon](https://www.symcon.de/). It communicates via the lamp's local REST API - no Elgato app required.
 
 ## Supported Devices
 
@@ -15,8 +15,8 @@ This module integrates [Elgato Key Light](https://www.elgato.com/en/key-light) l
 | Variable | Type | Description |
 |---|---|---|
 | On/Off | Boolean | Turns the lamp on or off |
-| Brightness | Integer (0–100 %) | Controls the brightness |
-| Color Temperature | Integer (2900–7000 K) | Controls the color temperature (warm → cool) |
+| Brightness | Integer (0-100 %) | Controls the brightness |
+| Color Temperature | Integer (2900-7000 K) | Controls the color temperature (warm -> cool) |
 
 All variables are controllable via WebFront and actions.
 
@@ -41,13 +41,13 @@ The instance is automatically displayed as a **light** in the tile visualization
    ```
 2. Create an **Elgato Key Light** instance (under *Devices*)
 3. Enter the hostname or IP address of the lamp (port `9123` is preset)
-4. Save – variables are created automatically
+4. Save - variables are created automatically
 
 ## Configuration
 
 | Setting | Description | Default |
 |---|---|---|
-| Hostname / IP | Address of the lamp | – |
+| Hostname / IP | Address of the lamp | - |
 | Port | TCP port of the lamp | `9123` |
 | Update Interval | Polling interval in seconds | `60` |
 
@@ -56,7 +56,7 @@ The instance is automatically displayed as a **light** in the tile visualization
 | Button | Description |
 |---|---|
 | Update Status | Reads the current state of the lamp immediately |
-| Identify Lamp | Makes the lamp flash briefly – useful when multiple devices are present |
+| Identify Lamp | Makes the lamp flash briefly - useful when multiple devices are present |
 | Show Debug Info | Displays device information (product name, serial number, firmware) and current light status as a popup |
 
 ## API Details
@@ -74,4 +74,4 @@ Further API details: [elgato-key-light-api on GitHub](https://github.com/adamesc
 
 ## License
 
-MIT License – see [LICENSE](LICENSE)
+MIT License - see [LICENSE](LICENSE)

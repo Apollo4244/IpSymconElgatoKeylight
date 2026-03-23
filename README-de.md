@@ -2,7 +2,7 @@
 
 *[English version](README.md)*
 
-Dieses Modul bindet [Elgato Key Light](https://www.elgato.com/de/key-light) Lampen direkt in [IP-Symcon](https://www.symcon.de/) ein. Es kommuniziert über die lokale REST-API der Lampe – keine Elgato-App notwendig.
+Dieses Modul bindet [Elgato Key Light](https://www.elgato.com/de/key-light) Lampen direkt in [IP-Symcon](https://www.symcon.de/) ein. Es kommuniziert über die lokale REST-API der Lampe - keine Elgato-App notwendig.
 
 ## Unterstützte Geräte
 
@@ -15,8 +15,8 @@ Dieses Modul bindet [Elgato Key Light](https://www.elgato.com/de/key-light) Lamp
 | Variable | Typ | Beschreibung |
 |---|---|---|
 | An/Aus | Boolean | Schaltet die Lampe ein oder aus |
-| Helligkeit | Integer (0–100 %) | Regelt die Helligkeit |
-| Farbtemperatur | Integer (2900–7000 K) | Regelt die Farbtemperatur (warm → kalt) |
+| Helligkeit | Integer (0-100 %) | Regelt die Helligkeit |
+| Farbtemperatur | Integer (2900-7000 K) | Regelt die Farbtemperatur (warm -> kalt) |
 
 Alle Variablen sind über WebFront und Aktionen steuerbar.
 
@@ -41,13 +41,13 @@ Die Instanz wird in der Kachel-Visualisierung automatisch als **Licht** dargeste
    ```
 2. Instanz **Elgato Key Light** anlegen (unter *Geräte*)
 3. Hostname oder IP-Adresse der Lampe eintragen (Port `9123` ist voreingestellt)
-4. Speichern – Variablen werden automatisch angelegt
+4. Speichern - Variablen werden automatisch angelegt
 
 ## Konfiguration
 
 | Einstellung | Beschreibung | Standard |
 |---|---|---|
-| Hostname / IP | Adresse der Lampe | – |
+| Hostname / IP | Adresse der Lampe | - |
 | Port | TCP-Port der Lampe | `9123` |
 | Aktualisierungsintervall | Polling-Intervall in Sekunden | `60` |
 
@@ -56,7 +56,7 @@ Die Instanz wird in der Kachel-Visualisierung automatisch als **Licht** dargeste
 | Schaltfläche | Beschreibung |
 |---|---|
 | Status aktualisieren | Liest den aktuellen Zustand der Lampe sofort aus |
-| Lampe identifizieren | Lässt die Lampe kurz blinken – nützlich bei mehreren Geräten |
+| Lampe identifizieren | Lässt die Lampe kurz blinken - nützlich bei mehreren Geräten |
 | Debug-Info anzeigen | Zeigt Geräteinformation (Produktname, Seriennummer, Firmware) und aktuellen Lichtstatus als Popup an |
 
 ## API-Details
@@ -74,4 +74,4 @@ Weitere Details zur API: [elgato-key-light-api auf GitHub](https://github.com/ad
 
 ## Lizenz
 
-MIT License – siehe [LICENSE](LICENSE)
+MIT License - siehe [LICENSE](LICENSE)
