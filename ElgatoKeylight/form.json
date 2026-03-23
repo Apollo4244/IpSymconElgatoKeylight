@@ -39,18 +39,18 @@
     "actions": [
         {
             "type": "Button",
+            "caption": "Read Device",
+            "onClick": "ELGATOKEYLIGHT_ReadDevice($id);"
+        },
+        {
+            "type": "Button",
             "caption": "Apply Device Name",
             "onClick": "ELGATOKEYLIGHT_ApplyDeviceName($id);"
         },
         {
             "type": "Button",
-            "caption": "Identify Lamp",
+            "caption": "Identify",
             "onClick": "ELGATOKEYLIGHT_Identify($id);"
-        },
-        {
-            "type": "Button",
-            "caption": "Show Debug Info",
-            "onClick": "ELGATOKEYLIGHT_ShowDebugInfo($id);"
         }
     ],
     "status": [

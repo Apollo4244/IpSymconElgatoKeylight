@@ -270,26 +270,39 @@ class KeyLight extends IPSModule
     }
 
     /**
-     * Displays device information and current light status as a popup.
+     * Reads all device information and current light status from the lamp,
+     * updates the stored attributes and form labels, and displays a summary popup.
      */
-    public function ShowDebugInfo(): void
+    public function ReadDevice(): void
     {
-        $infoJson  = @Sys_GetURLContent('http://' . trim($this->ReadPropertyString('Hostname')) . ':' . $this->ReadPropertyInteger('Port') . '/elgato/accessory-info');
+        $hostname  = trim($this->ReadPropertyString('Hostname'));
+        $port      = $this->ReadPropertyInteger('Port');
+        $infoJson  = @Sys_GetURLContent('http://' . $hostname . ':' . $port . '/elgato/accessory-info');
         $lightsJson = @Sys_GetURLContent($this->BuildUrl());
 
-        $info   = $infoJson  ? json_decode($infoJson, true)   : null;
+        $info   = $infoJson   ? json_decode($infoJson, true)   : null;
         $lights = $lightsJson ? json_decode($lightsJson, true) : null;
+
+        // Cache device name attributes and refresh form labels
+        if ($info) {
+            $productName = trim($info['productName'] ?? '');
+            $displayName = trim($info['displayName'] ?? '');
+            $this->WriteAttributeString('DeviceProductName', $productName);
+            $this->WriteAttributeString('DeviceDisplayName', $displayName);
+            $this->UpdateFormField('LabelProduct',     'caption', $this->Translate('Product:')      . ' ' . ($productName !== '' ? $productName : '-'));
+            $this->UpdateFormField('LabelDisplayName', 'caption', $this->Translate('Display Name:') . ' ' . ($displayName !== '' ? $displayName : '-'));
+        }
 
         $lines = [];
 
         if ($info) {
             $lines[] = $this->Translate('=== Device Information ===');
-            $lines[] = $this->Translate('Product:')          . ' ' . ($info['productName'] ?? '–');
-            $lines[] = $this->Translate('Display Name:')     . ' ' . ($info['displayName'] !== '' ? $info['displayName'] : $this->Translate('(not set)'));
-            $lines[] = $this->Translate('Serial Number:')    . ' ' . ($info['serialNumber'] ?? '–');
-            $lines[] = $this->Translate('Firmware:')         . ' ' . ($info['firmwareVersion'] ?? '–') . ' (Build ' . ($info['firmwareBuildNumber'] ?? '–') . ')';
-            $lines[] = $this->Translate('Hardware Type:')    . ' ' . ($info['hardwareBoardType'] ?? '–');
-            $lines[] = $this->Translate('Features:')         . ' ' . implode(', ', $info['features'] ?? []);
+            $lines[] = $this->Translate('Product:')       . ' ' . ($info['productName'] ?? '-');
+            $lines[] = $this->Translate('Display Name:')  . ' ' . ($info['displayName'] !== '' ? $info['displayName'] : $this->Translate('(not set)'));
+            $lines[] = $this->Translate('Serial Number:') . ' ' . ($info['serialNumber'] ?? '-');
+            $lines[] = $this->Translate('Firmware:')      . ' ' . ($info['firmwareVersion'] ?? '-') . ' (Build ' . ($info['firmwareBuildNumber'] ?? '-') . ')';
+            $lines[] = $this->Translate('Hardware Type:') . ' ' . ($info['hardwareBoardType'] ?? '-');
+            $lines[] = $this->Translate('Features:')      . ' ' . implode(', ', $info['features'] ?? []);
         } else {
             $lines[] = $this->Translate('=== Device Information ===');
             $lines[] = $this->Translate('Error: No connection.');
@@ -300,9 +313,9 @@ class KeyLight extends IPSModule
         if ($lights && isset($lights['lights'][0])) {
             $l = $lights['lights'][0];
             $lines[] = $this->Translate('=== Light Status ===');
-            $lines[] = $this->Translate('On/Off:')             . ' ' . ($l['on'] ? $this->Translate('On') : $this->Translate('Off'));
-            $lines[] = $this->Translate('Brightness:')         . ' ' . ($l['brightness'] ?? '–') . ' %';
-            $lines[] = $this->Translate('Color Temperature:')  . ' ' . $this->MiredToKelvin((int) ($l['temperature'] ?? 0)) . ' K (' . ($l['temperature'] ?? '–') . ' Mired)';
+            $lines[] = $this->Translate('On/Off:')            . ' ' . ($l['on'] ? $this->Translate('On') : $this->Translate('Off'));
+            $lines[] = $this->Translate('Brightness:')        . ' ' . ($l['brightness'] ?? '-') . ' %';
+            $lines[] = $this->Translate('Color Temperature:') . ' ' . $this->MiredToKelvin((int) ($l['temperature'] ?? 0)) . ' K (' . ($l['temperature'] ?? '-') . ' Mired)';
         } else {
             $lines[] = $this->Translate('=== Light Status ===');
             $lines[] = $this->Translate('Error: No connection.');
